@@ -76,7 +76,7 @@ exports.getProductById = async (req, res) => {
 exports.addProduct = async (req, res) => {
   try {
     // const data = req.body;
-    const { pid, name, mrp, currprice, store, image } = req.body;
+    const { pid, name, mrp, currprice, store, image, lat, long } = req.body;
     console.log(req.body);
 
     const already = await Products.findOne({
@@ -91,6 +91,13 @@ exports.addProduct = async (req, res) => {
       });
     }
 
+    console.log(pid);
+    console.log(name);
+    console.log(pid);
+    console.log(currprice);
+    console.log(lat);
+    console.log(long);
+
     // Validate data against the schema
     const product = new Products({
       pid: pid,
@@ -99,11 +106,10 @@ exports.addProduct = async (req, res) => {
       currprice: currprice,
       store: store,
       image: image,
+      lat: lat,
+      long: long,
     });
-    console.log(pid);
-    console.log(name);
-    console.log(pid);
-    console.log(currprice);
+
     // return
 
     const validationError = product.validateSync();

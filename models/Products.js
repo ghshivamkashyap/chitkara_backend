@@ -9,6 +9,8 @@ const productSchema = new mongoose.Schema(
     currprice: { type: Number, required: true },
     store: { type: String, required: true },
     image: { type: String, required: true },
+    lat: { type: String },
+    long: { type: String },
   },
   { timestamps: true }
 );
