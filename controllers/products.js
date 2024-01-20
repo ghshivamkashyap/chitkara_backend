@@ -1,5 +1,6 @@
 const Bill = require("../models/Bill");
 const Products = require("../models/Products");
+const Stores = require("../models/Stores");
 
 // get product using pid id
 exports.getProductById = async (req, res) => {
@@ -232,6 +233,40 @@ exports.getallProducts = async (req, res) => {
       iserror: true,
       message: "error in getting all products",
       error: error,
+    });
+  }
+};
+
+exports.getSameProductsFromStores = async (req, res) => {
+  try {
+    const pid = req.params.pid;
+    console.log("i m called - ", pid);
+
+    const product = await Products.findOne({ pid: pid });
+
+    const allSameProducts = await Products.find({ name: product?.name });
+
+    // const allAddress = [];
+
+    // allSameProducts.map((x) =>
+    //   allAddress.push(Stores.findOne({ sid: x?.store }))
+    // );
+    const allAddressPromises = allSameProducts.map((x) =>
+      Stores.findOne({ sid: x?.store })
+    );
+
+    const allAddress = await Promise.all(allAddressPromises);
+
+    return res.status(200).json({
+      success: true,
+      data: allSameProducts,
+      address: allAddress,
+    });
+  } catch (error) {
+    console.error("error is - ", error);
+    return res.status(400).json({
+      success: false,
+      data: error,
     });
   }
 };
