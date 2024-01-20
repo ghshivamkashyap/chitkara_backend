@@ -237,33 +237,67 @@ exports.getallProducts = async (req, res) => {
   }
 };
 
+// exports.getSameProductsFromStores = async (req, res) => {
+//   try {
+//     const pid = req.params.pid;
+//     console.log("i m called - ", pid);
+
+//     const product = await Products.findOne({ pid: pid });
+
+//     const allSameProducts = await Products.find({ name: product?.name });
+
+//     // const allAddress = [];
+
+//     // allSameProducts.map((x) =>
+//     //   allAddress.push(Stores.findOne({ sid: x?.store }))
+//     // );
+//     const allAddressPromises = allSameProducts.map((x) =>
+//       Stores.findOne({ sid: x?.store })
+//     );
+
+//     const allAddress = await Promise.all(allAddressPromises);
+
+//     return res.status(200).json({
+//       success: true,
+//       data: allSameProducts,
+//       address: allAddress,
+//     });
+//   } catch (error) {
+//     console.error("error is - ", error);
+//     return res.status(400).json({
+//       success: false,
+//       data: error,
+//     });
+//   }
+// };
+
 exports.getSameProductsFromStores = async (req, res) => {
   try {
     const pid = req.params.pid;
-    console.log("i m called - ", pid);
+    console.log("I'm called - ", pid);
 
     const product = await Products.findOne({ pid: pid });
 
     const allSameProducts = await Products.find({ name: product?.name });
 
-    // const allAddress = [];
-
-    // allSameProducts.map((x) =>
-    //   allAddress.push(Stores.findOne({ sid: x?.store }))
-    // );
     const allAddressPromises = allSameProducts.map((x) =>
       Stores.findOne({ sid: x?.store })
     );
 
     const allAddress = await Promise.all(allAddressPromises);
 
+    // Combine allSameProducts and allAddress object-wise
+    const mergedData = allSameProducts.map((product, index) => ({
+      ...product.toObject(), // Convert Mongoose document to plain JavaScript object
+      address: allAddress[index], // Add the corresponding address
+    }));
+
     return res.status(200).json({
       success: true,
-      data: allSameProducts,
-      address: allAddress,
+      data: mergedData,
     });
   } catch (error) {
-    console.error("error is - ", error);
+    console.error("Error is - ", error);
     return res.status(400).json({
       success: false,
       data: error,
